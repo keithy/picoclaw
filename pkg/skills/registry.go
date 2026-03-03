@@ -72,7 +72,6 @@ type GitHubRegistryConfig struct {
 	Registry   string // e.g., "keithy/angelhub" or "https://github.company.com/owner/skills"
 	Branch     string // e.g., "main" (default)
 	Workflow   string // e.g., "skills-index.yml" - the workflow that produces the index artifact
-	SkillPaths []string
 	GHToken    string // Optional - for higher rate limits
 }
 
