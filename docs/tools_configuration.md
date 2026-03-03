@@ -172,9 +172,11 @@ The MCP tool enables integration with external Model Context Protocol servers.
 
 ## Skills Tool
 
-The skills tool configures skill discovery and installation via registries like ClawHub.
+The skills tool configures skill discovery and installation via registries like ClawHub and GitHub.
 
 ### Registries
+
+#### ClawHub
 
 | Config                             | Type   | Default              | Description             |
 | ---------------------------------- | ------ | -------------------- | ----------------------- |
@@ -183,6 +185,17 @@ The skills tool configures skill discovery and installation via registries like 
 | `registries.clawhub.search_path`   | string | `/api/v1/search`     | Search API path         |
 | `registries.clawhub.skills_path`   | string | `/api/v1/skills`     | Skills API path         |
 | `registries.clawhub.download_path` | string | `/api/v1/download`   | Download API path       |
+
+#### GitHub
+
+| Config                    | Type   | Default       | Description                                              |
+| ------------------------- | ------ | ------------- | -------------------------------------------------------- |
+| `registries.github.enabled` | bool   | false         | Enable GitHub registry                                  |
+| `registries.github.registry` | string | -             | GitHub repo (e.g., `owner/repo`)                        |
+| `registries.github.branch`  | string | `main`        | Branch to fetch from                                     |
+| `registries.github.workflow` | string | `skills-index` | Workflow name that generates the skills index           |
+
+The GitHub registry publishes a `skills-index.json` file to its wiki, making it publicly accessible without authentication. 
 
 ### Configuration Example
 
@@ -193,10 +206,13 @@ The skills tool configures skill discovery and installation via registries like 
       "registries": {
         "clawhub": {
           "enabled": true,
-          "base_url": "https://clawhub.ai",
-          "search_path": "/api/v1/search",
-          "skills_path": "/api/v1/skills",
-          "download_path": "/api/v1/download"
+          "base_url": "https://clawhub.ai"
+        },
+        "github": {
+          "enabled": true,
+          "registry": "keithy/angelhub",
+          "branch": "main",
+          "workflow": "skills-index"
         }
       }
     }
