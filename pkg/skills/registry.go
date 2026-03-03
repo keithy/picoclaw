@@ -60,8 +60,20 @@ type SkillRegistry interface {
 // RegistryConfig holds configuration for all skill registries.
 // This is the input to NewRegistryManagerFromConfig.
 type RegistryConfig struct {
-	ClawHub               ClawHubConfig
+	GitHub               GitHubRegistryConfig
+	ClawHub              ClawHubConfig
 	MaxConcurrentSearches int
+}
+
+// GitHubRegistryConfig configures the GitHub/GitHub Enterprise registry.
+// Registry can be a full URL or owner/repo shorthand.
+type GitHubRegistryConfig struct {
+	Enabled    bool
+	Registry   string // e.g., "keithy/angelhub" or "https://github.company.com/owner/skills"
+	Branch     string // e.g., "main" (default)
+	Workflow   string // e.g., "skills-index.yml" - the workflow that produces the index artifact
+	SkillPaths []string
+	GHToken    string // Optional - for higher rate limits
 }
 
 // ClawHubConfig configures the ClawHub registry.
@@ -99,6 +111,9 @@ func NewRegistryManagerFromConfig(cfg RegistryConfig) *RegistryManager {
 	rm := NewRegistryManager()
 	if cfg.MaxConcurrentSearches > 0 {
 		rm.maxConcurrent = cfg.MaxConcurrentSearches
+	}
+	if cfg.GitHub.Enabled {
+		rm.AddRegistry(NewGitHubRegistry(cfg.GitHub))
 	}
 	if cfg.ClawHub.Enabled {
 		rm.AddRegistry(NewClawHubRegistry(cfg.ClawHub))

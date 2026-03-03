@@ -20,11 +20,16 @@ require (
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
 	github.com/tencent-connect/botgo v0.2.1
-	go.mau.fi/whatsmeow v0.0.0-20260219150138-7ae702b1eed4
-	golang.org/x/oauth2 v0.35.0
-	golang.org/x/time v0.14.0
 	google.golang.org/protobuf v1.36.11
 	modernc.org/sqlite v1.46.1
+)
+
+require (
+	github.com/gdamore/tcell/v2 v2.13.8
+	github.com/rivo/tview v0.42.0
+	go.mau.fi/whatsmeow v0.0.0-20260227112304-c9652e4448a2
+	golang.org/x/oauth2 v0.30.0
+	golang.org/x/time v0.12.0
 )
 
 require (
@@ -35,7 +40,6 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/elliotchance/orderedmap/v3 v3.1.0 // indirect
 	github.com/gdamore/encoding v1.0.1 // indirect
-	github.com/gdamore/tcell/v2 v2.13.8 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.3.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
@@ -44,7 +48,6 @@ require (
 	github.com/petermattis/goid v0.0.0-20260113132338-7c7de50cc741 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
-	github.com/rivo/tview v0.42.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rs/zerolog v1.34.0 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
