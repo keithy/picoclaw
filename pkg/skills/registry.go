@@ -61,20 +61,19 @@ type SkillRegistry interface {
 // RegistryConfig holds configuration for all skill registries.
 // This is the input to NewRegistryManagerFromConfig.
 type RegistryConfig struct {
-	GitHub               GitHubRegistryConfig
+	Index                 map[string]IndexRegistryConfig
 	ClawHub              ClawHubConfig
 	MaxConcurrentSearches int
 }
 
-// GitHubRegistryConfig configures the GitHub/GitHub Enterprise registry.
-// Registry can be a full URL or owner/repo shorthand.
-type GitHubRegistryConfig struct {
-	Enabled    bool
-	Registry   string // e.g., "keithy/angelhub" or "https://github.company.com/owner/skills"
-	Branch     string // e.g., "main" (default)
-	Workflow   string // e.g., "skills-index.yml" - the workflow that produces the index artifact
-	GHToken    string // Optional - for higher rate limits
-	GistID     string // Optional - for gist-based index (public gist, no auth needed)
+// IndexRegistryConfig configures an index-based registry.
+type IndexRegistryConfig struct {
+	Enabled             bool
+	IndexURL            string
+	ExtraHeader         string
+	AuthorizationHeader string
+	AgentHeader         string
+	AllowedPrefixes     []string
 }
 
 // ClawHubConfig configures the ClawHub registry.
@@ -113,8 +112,11 @@ func NewRegistryManagerFromConfig(cfg RegistryConfig) *RegistryManager {
 	if cfg.MaxConcurrentSearches > 0 {
 		rm.maxConcurrent = cfg.MaxConcurrentSearches
 	}
-	if cfg.GitHub.Enabled {
-		rm.AddRegistry(NewGitHubRegistry(cfg.GitHub))
+	// Add index registries from map
+	for name, indexCfg := range cfg.Index {
+		if indexCfg.Enabled {
+			rm.AddRegistry(NewIndexRegistry(name, indexCfg))
+		}
 	}
 	if cfg.ClawHub.Enabled {
 		rm.AddRegistry(NewClawHubRegistry(cfg.ClawHub))
@@ -130,12 +132,12 @@ func (rm *RegistryManager) AddRegistry(r SkillRegistry) {
 }
 
 // GetRegistry returns a registry by name, or nil if not found.
-// Supports exact match and prefix match (e.g., "github" matches "github:owner/repo").
+// Supports exact match and prefix match (e.g., "github" matches "github:angelhub").
 func (rm *RegistryManager) GetRegistry(name string) SkillRegistry {
 	rm.mu.RLock()
 	defer rm.mu.RUnlock()
 	for _, r := range rm.registries {
-		if r.Name() == name || strings.HasPrefix(r.Name(), name+":") {
+		if r.Name() == name || strings.HasPrefix(r.Name(), name+":") || strings.HasPrefix(name, r.Name()+":") {
 			return r
 		}
 	}
@@ -237,4 +239,19 @@ func sortByScoreDesc(results []SearchResult) {
 		}
 		results[j+1] = key
 	}
+}
+
+// SkillIndex represents the index published by a GitHub workflow.
+type SkillIndex struct {
+	Skills []SkillDefinition `json:"skills"`
+}
+
+// SkillDefinition defines a skill in the index.
+type SkillDefinition struct {
+	Slug        string   `json:"slug"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Path        string   `json:"path"`
+	DownloadURL string   `json:"download_url"`
+	Files       []string `json:"files"`
 }

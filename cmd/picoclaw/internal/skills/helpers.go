@@ -17,6 +17,22 @@ import (
 
 const skillsSearchMaxResults = 20
 
+// convertIndexConfig converts config index registries to skills package format
+func convertIndexConfig(c map[string]config.IndexRegistryConfig) map[string]skills.IndexRegistryConfig {
+	result := make(map[string]skills.IndexRegistryConfig)
+	for k, v := range c {
+		result[k] = skills.IndexRegistryConfig{
+			Enabled:             v.Enabled,
+			IndexURL:            v.IndexURL,
+			ExtraHeader:         v.ExtraHeader,
+			AuthorizationHeader: v.AuthorizationHeader,
+			AgentHeader:         v.AgentHeader,
+			AllowedPrefixes:     v.AllowedPrefixes,
+		}
+	}
+	return result
+}
+
 func skillsListCmd(loader *skills.SkillsLoader) {
 	allSkills := loader.ListSkills()
 
@@ -67,7 +83,7 @@ func skillsInstallFromRegistry(cfg *config.Config, registryName, slug string) er
 	registryMgr := skills.NewRegistryManagerFromConfig(skills.RegistryConfig{
 		MaxConcurrentSearches: cfg.Tools.Skills.MaxConcurrentSearches,
 		ClawHub:               skills.ClawHubConfig(cfg.Tools.Skills.Registries.ClawHub),
-		GitHub:                skills.GitHubRegistryConfig(cfg.Tools.Skills.Registries.GitHub),
+		Index:                convertIndexConfig(cfg.Tools.Skills.Registries.Index),
 	})
 
 	registry := registryMgr.GetRegistry(registryName)
@@ -230,7 +246,7 @@ func skillsSearchCmd(query string) {
 	registryMgr := skills.NewRegistryManagerFromConfig(skills.RegistryConfig{
 		MaxConcurrentSearches: cfg.Tools.Skills.MaxConcurrentSearches,
 		ClawHub:               skills.ClawHubConfig(cfg.Tools.Skills.Registries.ClawHub),
-		GitHub:                skills.GitHubRegistryConfig(cfg.Tools.Skills.Registries.GitHub),
+		Index:                convertIndexConfig(cfg.Tools.Skills.Registries.Index),
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

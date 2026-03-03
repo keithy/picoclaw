@@ -186,16 +186,16 @@ The skills tool configures skill discovery and installation via registries like 
 | `registries.clawhub.skills_path`   | string | `/api/v1/skills`     | Skills API path         |
 | `registries.clawhub.download_path` | string | `/api/v1/download`   | Download API path       |
 
-#### GitHub
+#### Index (Remote)
 
-| Config                    | Type   | Default       | Description                                              |
-| ------------------------- | ------ | ------------- | -------------------------------------------------------- |
-| `registries.github.enabled` | bool   | false         | Enable GitHub registry                                  |
-| `registries.github.registry` | string | -             | GitHub repo (e.g., `owner/repo`)                        |
-| `registries.github.branch`  | string | `main`        | Branch to fetch from                                     |
-| `registries.github.workflow` | string | `skills-index` | Workflow name that generates the skills index           |
+Index registries fetch `skills-index.json` from any HTTP URL.
 
-The GitHub registry publishes a `skills-index.json` file to its wiki, making it publicly accessible without authentication. 
+| Config                          | Type   | Default       | Description                                              |
+| ------------------------------- | ------ | ------------- | -------------------------------------------------------- |
+| `registries.index:<name>.enabled` | bool   | false         | Enable index registry                                  |
+| `registries.index:<name>.index_url` | string | -             | Full URL to skills-index.json                        |
+
+The index URL can point to any publicly accessible `skills-index.json` file (e.g., GitHub wiki raw URL).
 
 ### Configuration Example
 
@@ -208,11 +208,9 @@ The GitHub registry publishes a `skills-index.json` file to its wiki, making it 
           "enabled": true,
           "base_url": "https://clawhub.ai"
         },
-        "github": {
+        "index:angelhub": {
           "enabled": true,
-          "registry": "keithy/angelhub",
-          "branch": "main",
-          "workflow": "skills-index"
+          "index_url": "https://raw.githubusercontent.com/wiki/owner/angelhub/skills-index.json"
         }
       }
     }

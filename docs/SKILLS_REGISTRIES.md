@@ -14,7 +14,7 @@ picoclaw skills search <query>
 
 ```bash
 # Install from a specific registry
-picoclaw skills install --registry github self-config
+picoclaw skills install --registry index:angelhub self-config
 picoclaw skills install --registry clawhub github
 
 # Install directly from GitHub
