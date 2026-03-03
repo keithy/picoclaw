@@ -47,22 +47,44 @@ The default registry at [clawhub.ai](https://clawhub.ai). Enable in config:
 }
 ```
 
-### GitHub
+### Index
 
-Install skills from any public GitHub repository that publishes a skills index.
+Install skills from any HTTP endpoint that serves a skills-index.json.
 
-**Configuration:**
+**Basic Configuration:**
 
 ```json
 {
   "tools": {
     "skills": {
       "registries": {
-        "github": {
+        "index:myorg": {
           "enabled": true,
-          "registry": "owner/repo",
-          "branch": "main",
-          "workflow": "skills-index"
+          "index_url": "https://example.com/skills-index.json"
+        }
+      }
+    }
+  }
+}
+```
+
+**Configuration with security options:**
+
+```json
+{
+  "tools": {
+    "skills": {
+      "registries": {
+        "index:angelhub": {
+          "enabled": true,
+          "index_url": "https://raw.githubusercontent.com/wiki/keithy/angelhub/skills-index.json",
+          "extra_header": "X-Custom-Header: value",
+          "authorization_header": "Bearer token",
+          "agent_header": "picoclaw/1.0",
+          "allowed_prefixes": [
+            "https://raw.githubusercontent.com/wiki/keithy/angelhub/",
+            "https://raw.githubusercontent.com/keithy/angelhub/"
+          ]
         }
       }
     }
@@ -72,69 +94,31 @@ Install skills from any public GitHub repository that publishes a skills index.
 
 ## Creating Your Own Registry
 
-To create a GitHub-based registry:
+To create a skill registry:
 
-### 1. Create a GitHub Repository
+### 1. Create a Repository
 
 Create a public repository to host your skills.
 
 ### 2. Add Skills
 
-Add skills in the `skills/` directory. Each skill needs a `SKILL.md` file:
+Add skills in the `picoclaw/skills/` directory (or `skills/` for ecosystem-agnostic). Each skill needs a `SKILL.md` file:
 
 ```
-skills/
-├── github/
-│   └── SKILL.md
-├── weather/
-│   └── SKILL.md
-└── calculator/
-    └── SKILL.md
+picoclaw/
+└── skills/
+    ├── self/
+    │   ├── self-config/
+    │   │   └── SKILL.md
+    │   └── self-debug/
+    │       └── SKILL.md
+    └── weather/
+        └── SKILL.md
 ```
 
 ### 3. Create the Index Workflow
 
-Add `.github/workflows/skills-index.yml`:
-
-```yaml
-name: Skills Index
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'skills/**/SKILL.md'
-  schedule:
-    - cron: '0 0 1 * *'  # Monthly
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-jobs:
-  index:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Generate Skills Index
-        run: |
-          # Find all SKILL.md files and generate index
-          index_json=$(find skills -name 'SKILL.md' -type f | while read file; do
-            slug=$(basename "$(dirname "$file")")
-            category=$(basename "$(dirname "$(dirname "$file")")")
-            name=$(sed -n 's/^# *//p' "$file" | head -1)
-            echo "{\"slug\":\"$slug\",\"name\":\"$name\",\"category\":\"$category\",\"path\":\"$file\"}"
-          done | jq -s '.')
-
-          echo "{\"version\":1,\"skills\":$index_json}" > skills-index.json
-
-      - name: Commit Index to Repo
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: update skills index"
-          file_pattern: "skills-index.json"
-```
+Add a workflow to generate the skills index. See [AngelHub's workflow](https://github.com/keithy/angelhub/blob/main/.github/workflows/picoclaw-skills-index.yml) for a complete example.
 
 ### 4. Enable in PicoClaw
 
@@ -143,9 +127,9 @@ jobs:
   "tools": {
     "skills": {
       "registries": {
-        "github": {
+        "index:myorg": {
           "enabled": true,
-          "registry": "your-username/your-repo"
+          "index_url": "https://example.com/skills-index.json"
         }
       }
     }
