@@ -583,6 +583,16 @@ type SearchCacheConfig struct {
 
 type SkillsRegistriesConfig struct {
 	ClawHub ClawHubRegistryConfig `json:"clawhub"`
+	GitHub  GitHubRegistryConfig  `json:"github"`
+}
+
+type GitHubRegistryConfig struct {
+	Enabled     bool   `json:"enabled"           env:"PICOCLAW_SKILLS_REGISTRIES_GITHUB_ENABLED"`
+	Registry    string `json:"registry"          env:""`
+	Branch      string `json:"branch"            env:""`
+	Workflow    string `json:"workflow"           env:""`
+	GHToken     string `json:"github_token"      env:"PICOCLAW_SKILLS_REGISTRIES_GITHUB_TOKEN"`
+	GistID      string `json:"gist_id"           env:""`
 }
 
 type ClawHubRegistryConfig struct {

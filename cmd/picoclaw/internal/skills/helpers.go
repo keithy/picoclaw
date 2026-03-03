@@ -67,6 +67,7 @@ func skillsInstallFromRegistry(cfg *config.Config, registryName, slug string) er
 	registryMgr := skills.NewRegistryManagerFromConfig(skills.RegistryConfig{
 		MaxConcurrentSearches: cfg.Tools.Skills.MaxConcurrentSearches,
 		ClawHub:               skills.ClawHubConfig(cfg.Tools.Skills.Registries.ClawHub),
+		GitHub:                skills.GitHubRegistryConfig(cfg.Tools.Skills.Registries.GitHub),
 	})
 
 	registry := registryMgr.GetRegistry(registryName)
@@ -229,6 +230,7 @@ func skillsSearchCmd(query string) {
 	registryMgr := skills.NewRegistryManagerFromConfig(skills.RegistryConfig{
 		MaxConcurrentSearches: cfg.Tools.Skills.MaxConcurrentSearches,
 		ClawHub:               skills.ClawHubConfig(cfg.Tools.Skills.Registries.ClawHub),
+		GitHub:                skills.GitHubRegistryConfig(cfg.Tools.Skills.Registries.GitHub),
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

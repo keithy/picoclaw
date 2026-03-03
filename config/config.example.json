@@ -312,6 +312,14 @@
           "search_path": "/api/v1/search",
           "skills_path": "/api/v1/skills",
           "download_path": "/api/v1/download"
+        },
+        "github": {
+          "enabled": false,
+          "owner": "your-github-username",
+          "repo": "skills-repo",
+          "branch": "main",
+          "index_path": "skills/index.json",
+          "github_token": ""
         }
       }
     }

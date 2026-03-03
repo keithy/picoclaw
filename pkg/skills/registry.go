@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 	"sync"
 	"time"
 )
@@ -73,6 +74,7 @@ type GitHubRegistryConfig struct {
 	Branch     string // e.g., "main" (default)
 	Workflow   string // e.g., "skills-index.yml" - the workflow that produces the index artifact
 	GHToken    string // Optional - for higher rate limits
+	GistID     string // Optional - for gist-based index (public gist, no auth needed)
 }
 
 // ClawHubConfig configures the ClawHub registry.
@@ -128,11 +130,12 @@ func (rm *RegistryManager) AddRegistry(r SkillRegistry) {
 }
 
 // GetRegistry returns a registry by name, or nil if not found.
+// Supports exact match and prefix match (e.g., "github" matches "github:owner/repo").
 func (rm *RegistryManager) GetRegistry(name string) SkillRegistry {
 	rm.mu.RLock()
 	defer rm.mu.RUnlock()
 	for _, r := range rm.registries {
-		if r.Name() == name {
+		if r.Name() == name || strings.HasPrefix(r.Name(), name+":") {
 			return r
 		}
 	}
