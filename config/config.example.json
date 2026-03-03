@@ -319,7 +319,10 @@
           "extra_header": "X-Custom-Header: value",
           "authorization_header": "Bearer token",
           "agent_header": "picoclaw/1.0",
-          "allowed_prefixes": ["https://api.github.com/repos/owner/angelhub/"]
+          "allowed_prefixes": [
+            "https://raw.githubusercontent.com/wiki/owner/angelhub/",
+            "https://raw.githubusercontent.com/owner/angelhub/"
+          ]
         }
       }
     }
