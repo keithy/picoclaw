@@ -210,7 +210,7 @@ The index URL can point to any publicly accessible `skills-index.json` file (e.g
         },
         "index:angelhub": {
           "enabled": true,
-          "index_url": "https://raw.githubusercontent.com/wiki/owner/angelhub/skills-index.json"
+          "index_url": "https://raw.githubusercontent.com/wiki/keithy/angelhub/skills-index.json"
         }
       }
     }

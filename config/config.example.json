@@ -315,13 +315,13 @@
         },
         "index:angelhub": {
           "enabled": false,
-          "index_url": "https://raw.githubusercontent.com/wiki/owner/angelhub/skills-index.json",
+          "index_url": "https://raw.githubusercontent.com/wiki/keithy/angelhub/skills-index.json",
           "extra_header": "X-Custom-Header: value",
           "authorization_header": "Bearer token",
           "agent_header": "picoclaw/1.0",
           "allowed_prefixes": [
-            "https://raw.githubusercontent.com/wiki/owner/angelhub/",
-            "https://raw.githubusercontent.com/owner/angelhub/"
+            "https://raw.githubusercontent.com/wiki/keithy/angelhub/",
+            "https://raw.githubusercontent.com/keithy/angelhub/"
           ]
         }
       }
