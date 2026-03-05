@@ -127,8 +127,12 @@ func rootCompleteArgs(cmd *cobra.Command, args []string, toComplete string) ([]s
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
-	// Also include built-in commands
-	builtIn := []string{"onboard", "agent", "auth", "gateway", "status", "cron", "migrate", "skills", "plugins", "version"}
+	// Also include built-in commands for shell completion
+	builtIn := []string{
+		"onboard", "agent", "auth", "gateway",
+		"status", "cron", "migrate", "skills",
+		"plugins", "version",
+	}
 
 	// Combine both lists
 	result := append(builtIn, pluginList...)
