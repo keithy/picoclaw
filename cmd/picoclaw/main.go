@@ -34,7 +34,12 @@ func NewPicoclawCommand() *cobra.Command {
 		Example:           "picoclaw list",
 		Args:              rootArgsValidator,
 		ValidArgsFunction: rootCompleteArgs,
+		DisableFlagParsing: true, // Pass all args (including flags) directly to plugins/commands
 		RunE: func(cmd *cobra.Command, args []string) error {
+			// With DisableFlagParsing, --help is just an arg - show help
+			if len(args) > 0 && (args[0] == "--help" || args[0] == "-h") {
+				return cmd.Help()
+			}
 			return cmd.Help()
 		},
 	}
@@ -76,18 +81,16 @@ func rootArgsValidator(cmd *cobra.Command, args []string) error {
 
 	// Check if it's a known subcommand
 	knownCommands := map[string]bool{
-		"onboard":   true,
-		"agent":     true,
-		"auth":      true,
-		"gateway":   true,
-		"status":    true,
-		"cron":      true,
-		"migrate":   true,
-		"skills":    true,
-		"version":   true,
-		"help":      true,
-		"-h":        true,
-		"--help":    true,
+		"onboard": true,
+		"agent":   true,
+		"auth":    true,
+		"gateway": true,
+		"status":  true,
+		"cron":    true,
+		"migrate": true,
+		"skills":  true,
+		"version": true,
+		"help":    true,
 	}
 
 	if knownCommands[args[0]] {
@@ -97,12 +100,16 @@ func rootArgsValidator(cmd *cobra.Command, args []string) error {
 	// Try to find a plugin with this name
 	pluginPath, err := plugins.FindPlugin(args[0])
 	if err != nil {
+		// If it looks like a flag (starts with "-"), let cobra handle it
+		if len(args[0]) > 0 && args[0][0] == '-' {
+			return nil
+		}
 		// Not a known command and not a plugin - print error and exit
 		fmt.Fprintf(os.Stderr, "picoclaw: %q is not a picoclaw command. See 'picoclaw --help'.\n", args[0])
 		os.Exit(1)
 	}
 
-	// Execute the plugin and exit
+	// Execute the plugin with ALL remaining args (including any flags like --help)
 	plugins.ExecPlugin(pluginPath, args[1:])
 	// Should not reach here
 	return nil
@@ -129,8 +136,22 @@ func rootCompleteArgs(cmd *cobra.Command, args []string, toComplete string) ([]s
 }
 
 func main() {
-	fmt.Printf("%s", banner)
+	// Print banner unless PICOCLAW_NO_BANNER=1
+	if os.Getenv("PICOCLAW_NO_BANNER") != "1" {
+		fmt.Printf("%s", banner)
+	}
 	cmd := NewPicoclawCommand()
+
+	// With DisableFlagParsing, intercept global flags before plugin routing
+	if len(os.Args) > 1 {
+		arg := os.Args[1]
+		if arg == "--version" || arg == "-v" {
+			// Convert --version to "version" subcommand
+			newArgs := append([]string{os.Args[0], "version"}, os.Args[2:]...)
+			cmd.SetArgs(newArgs[1:])
+		}
+	}
+
 	if err := cmd.Execute(); err != nil {
 		os.Exit(1)
 	}

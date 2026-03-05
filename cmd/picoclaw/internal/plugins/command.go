@@ -111,6 +111,11 @@ func listPlugins() ([]string, error) {
 }
 
 func findPlugin(name string) (string, error) {
+	// Don't treat flags as plugins - let caller handle them
+	if len(name) > 0 && name[0] == '-' {
+		return "", fmt.Errorf("not a plugin: %q", name)
+	}
+
 	pluginsDir := getPluginsDir()
 
 	// Try exact match first
