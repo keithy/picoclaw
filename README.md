@@ -1301,7 +1301,7 @@ PicoClaw supports extensible plugins. Place executable files in `~/.picoclaw/plu
 # List available plugins
 picoclaw plugins-list
 
-# Run a plugin (shorthand)
+# Run a plugin (shorthand - matches prefix)
 picoclaw service status
 
 # Run a plugin (full name)
@@ -1311,7 +1311,7 @@ picoclaw picoclaw-service status
 picoclaw service --help
 ```
 
-Plugins are executables in `~/.picoclaw/plugins/` with names starting with `picoclaw-` (or match via prefix).
+Plugins are executables in `~/.picoclaw/plugins/`. If a plugin is named `picoclaw-service`, you can run it as `picoclaw service` (prefix match).
 
 For programmatic use, hide the banner:
 
