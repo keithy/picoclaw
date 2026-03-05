@@ -78,14 +78,14 @@ func TestListPluginsIntegration(t *testing.T) {
 
 	// Create a temporary test plugin
 	tmpDir := pluginsDir
-	if err := os.MkdirAll(tmpDir, 0755); err != nil {
+	if err := os.MkdirAll(tmpDir, 0o755); err != nil {
 		// Directory creation failed, skip integration test
 		t.Skip("cannot create plugins directory")
 	}
 
 	// Create a temporary test script
 	testPlugin := filepath.Join(tmpDir, "test-plugin-temp")
-	if err := os.WriteFile(testPlugin, []byte("#!/bin/bash\necho hello"), 0755); err != nil {
+	if err := os.WriteFile(testPlugin, []byte("#!/bin/bash\necho hello"), 0o755); err != nil {
 		t.Skip("cannot write test plugin")
 	}
 	defer os.Remove(testPlugin)
