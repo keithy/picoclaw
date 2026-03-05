@@ -26,8 +26,8 @@ func TestNewPicoclawCommand(t *testing.T) {
 
 	assert.False(t, cmd.HasFlags())
 
-	assert.Nil(t, cmd.Run)
-	assert.Nil(t, cmd.RunE)
+	// RunE is set to handle plugin execution
+	assert.NotNil(t, cmd.RunE)
 
 	assert.Nil(t, cmd.PersistentPreRun)
 	assert.Nil(t, cmd.PersistentPostRun)

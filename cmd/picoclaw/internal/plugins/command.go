@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -127,6 +128,37 @@ func findPlugin(name string) (string, error) {
 		}
 	}
 
+	// Try prefix match - if user types "X", match "X-*" or "*-X"
+	entries, err := os.ReadDir(pluginsDir)
+	if err == nil {
+		var matches []string
+		for _, entry := range entries {
+			if entry.IsDir() {
+				continue
+			}
+			info, err := entry.Info()
+			if err != nil {
+				continue
+			}
+			if info.Mode()&0111 == 0 {
+				continue
+			}
+			pluginName := entry.Name()
+			// Check if name is a prefix or suffix of plugin name
+			if strings.HasPrefix(pluginName, name+"-") ||
+				strings.HasPrefix(pluginName, name) ||
+				strings.HasSuffix(pluginName, "-"+name) {
+				matches = append(matches, pluginName)
+			}
+		}
+		if len(matches) == 1 {
+			return filepath.Join(pluginsDir, matches[0]), nil
+		}
+		if len(matches) > 1 {
+			return "", fmt.Errorf("multiple plugins match %q: %v", name, matches)
+		}
+	}
+
 	return "", fmt.Errorf("plugin %q not found", name)
 }
 
@@ -193,4 +225,19 @@ func newListCommand() *cobra.Command {
 			return nil
 		},
 	}
+}
+
+// FindPlugin returns the path to a plugin by name, or an error if not found
+func FindPlugin(name string) (string, error) {
+	return findPlugin(name)
+}
+
+// ExecPlugin executes a plugin with the given arguments
+func ExecPlugin(pluginPath string, args []string) {
+	execPlugin(pluginPath, args)
+}
+
+// ListPlugins returns a list of available plugin names
+func ListPlugins() ([]string, error) {
+	return listPlugins()
 }
