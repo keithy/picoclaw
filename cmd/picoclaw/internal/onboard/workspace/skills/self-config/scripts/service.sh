@@ -1,0 +1,1 @@
+/infra/code/angelhub/picoclaw/skills/self/self-config/scripts/service.sh
