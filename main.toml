@@ -1,7 +1,4 @@
-# Branch-specific mise config
+# Branch-specific config for main
 
 [env]
 REPO_DIR = "/infra/code/picoclaw"
-
-[tasks.dev]
-run = "make run"
