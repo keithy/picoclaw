@@ -1,8 +1,0 @@
-[env]
-PROJECT_NAME = "picoclaw"
-
-[hooks]
-cd = '''branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) && echo -e "[env]\\nREPO_DIR=\\"$(pwd)\\"" > .mise.local.toml'''
-
-[tasks.dev]
-run = "echo hello"
