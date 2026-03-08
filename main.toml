@@ -2,3 +2,4 @@
 
 [env]
 REPO_DIR = "/infra/code/picoclaw"
+IT_WORKED = "YAY"

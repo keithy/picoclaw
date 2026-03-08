@@ -1,0 +1,2 @@
+#!/bin/bash
+export MISE_ENV=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
