@@ -1,6 +1,5 @@
 #!/bin/bash
-# mise task: build
-# Build current branch with PRs merged
+#MISE description="Build current branch with upstream PRs merged"
 
 cd "$(dirname "$MISE.toml")/.."
 exec "../skills/self-build/scripts/build-branch.sh"

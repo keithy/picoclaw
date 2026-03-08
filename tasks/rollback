@@ -1,0 +1,62 @@
+#!/bin/bash
+#MISE description="Rollback to previous version / Setup auto-rollback"
+set -euo pipefail
+
+MARKER="${PICOCLAW_HOME:-$HOME/.picoclaw}/BUILD-PENDING-ROLLBACK"
+AUTOROLLBACK_SECONDS="${AUTOROLLBACK_SECONDS:-600}"
+
+# Mode 1: Prepare - start background timer and return immediately
+if [ "${1:-}" = "--prepare" ]; then
+    echo "[AUTOROLLBACK] Starting timer (${AUTOROLLBACK_SECONDS}s)..."
+    echo "$$" > "$MARKER"
+    
+    # Background process that does rollback if timer expires
+    (
+        sleep "$AUTOROLLBACK_SECONDS"
+        if [ -f "$MARKER" ]; then
+            echo "[AUTOROLLBACK] Timer expired, rolling back..."
+            exec "$0"
+        fi
+    ) &
+    
+    echo "[AUTOROLLBACK] Timer started in background"
+    exit 0
+fi
+
+# Mode 2: Perform rollback (called by timer or manually)
+if [ -f "$MARKER" ]; then
+    echo "[ROLLBACK] Auto-rollback triggered"
+    rm -f "$MARKER"
+else
+    # Manual rollback - require confirmation
+    if [ ! -d "build-prev" ]; then
+        echo "[ROLLBACK] No previous build found."
+        exit 1
+    fi
+    echo "[ROLLBACK] Manual rollback"
+fi
+
+echo "[ROLLBACK] Stopping picoclaw service..."
+if command -v picoclaw &>/dev/null; then
+    picoclaw service stop 2>/dev/null || true
+elif command -v picoclaw-manager &>/dev/null; then
+    picoclaw-manager service stop 2>/dev/null || true
+elif systemctl --user is-active picoclaw &>/dev/null; then
+    systemctl --user stop picoclaw
+fi
+
+echo "[ROLLBACK] Restoring previous build..."
+rm -rf build-next
+mv build-current build-next
+mv build-prev build-current
+
+echo "[ROLLBACK] Restarting picoclaw service..."
+if command -v picoclaw &>/dev/null; then
+    picoclaw service start 2>/dev/null || true
+elif command -v picoclaw-manager &>/dev/null; then
+    picoclaw-manager service start 2>/dev/null || true
+elif systemctl --user list-unit-files | grep -q picoclaw; then
+    systemctl --user start picoclaw
+fi
+
+echo "[ROLLBACK] Done."

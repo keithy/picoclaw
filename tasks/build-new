@@ -1,0 +1,11 @@
+#!/bin/bash
+#MISE description="Build picoclaw.new for testing"
+set -e
+
+OUTPUT_NAME="${OUTPUT_NAME:-picoclaw-new}"
+OUTPUT_DIR="${OUTPUT_DIR:-build}"
+
+echo "Building $OUTPUT_NAME..."
+go build -ldflags "-s -w" -o "${OUTPUT_DIR}/${OUTPUT_NAME}" ./cmd/picoclaw
+
+echo "Built: ${OUTPUT_DIR}/${OUTPUT_NAME}"

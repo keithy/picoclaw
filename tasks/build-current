@@ -1,0 +1,21 @@
+#!/bin/bash
+#MISE description="Build binary (./build-current/picoclaw)"
+set -e
+
+OUTPUT_DIR="${1:-build-current}"
+
+TARGETS="${TARGETS:-./cmd/picoclaw}"
+
+echo "Building to $OUTPUT_DIR/..."
+IFS=',' read -ra TARGET_ARRAY <<< "$TARGETS"
+for target in "${TARGET_ARRAY[@]}"; do
+    base=$(basename "$target" .go)
+    echo "  Building $base..."
+    go build -ldflags "-s -w" -o "${OUTPUT_DIR}/${base}" "$target"
+done
+
+echo "Built to ${OUTPUT_DIR}/"
+
+if command -v mise &>/dev/null; then
+    mise link github:sipeed/picoclaw@"${OUTPUT_DIR#*-}" "$OUTPUT_DIR" --force
+fi

@@ -1,0 +1,12 @@
+#!/bin/bash
+#MISE description="Confirm current version, cancel auto-rollback"
+set -euo pipefail
+
+MARKER="${PICOCLAW_HOME:-$HOME/.picoclaw}/BUILD-PENDING-ROLLBACK"
+
+if [ -f "$MARKER" ]; then
+    rm -f "$MARKER"
+    echo "[CONFIRM] Auto-rollback cancelled. Version confirmed."
+else
+    echo "[CONFIRM] No pending rollback."
+fi

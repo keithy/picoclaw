@@ -1,0 +1,45 @@
+#!/bin/bash
+#MISE description="Switch to next version (atomic: save, stop, switch, start)"
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# BEFORE stopping service: setup auto-rollback
+# If we die, rollback will restore after timeout
+echo "[SWITCH] Setting up auto-rollback (10min)..."
+"$SCRIPT_DIR/rollback" --prepare
+
+# NOW stop service (chat interface may die here)
+echo "[SWITCH] Stopping picoclaw service..."
+if command -v picoclaw &>/dev/null; then
+    picoclaw service stop 2>/dev/null || true
+elif command -v picoclaw-manager &>/dev/null; then
+    picoclaw-manager service stop 2>/dev/null || true
+elif systemctl --user is-active picoclaw &>/dev/null; then
+    systemctl --user stop picoclaw
+else
+    echo "[SWITCH] Could not find service to stop"
+fi
+
+# Atomic switch
+echo "[SWITCH] Switching builds..."
+rm -rf build-prev
+mv build-current build-prev
+rm -rf build-current
+mv build-next build-current
+echo "[SWITCH] build-current -> build-prev"
+echo "[SWITCH] build-next -> build-current"
+
+# Start service
+echo "[SWITCH] Starting picoclaw service..."
+if command -v picoclaw &>/dev/null; then
+    picoclaw service start 2>/dev/null || true
+elif command -v picoclaw-manager &>/dev/null; then
+    picoclaw-manager service start 2>/dev/null || true
+elif systemctl --user list-unit-files | grep -q picoclaw; then
+    systemctl --user start picoclaw
+else
+    echo "[SWITCH] Could not restart service. Start manually."
+fi
+
+echo "[SWITCH] Done. Run 'confirm' in 10min to cancel rollback."
