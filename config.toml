@@ -1,0 +1,16 @@
+# Mise configuration
+
+[env]
+PROJECT_NAME = "picoclaw"
+
+[tools]
+go = "latest"
+
+[tasks.dev]
+run = "make run"
+
+[tasks.test]
+run = "make test"
+
+[tasks.build]
+run = "make build"
