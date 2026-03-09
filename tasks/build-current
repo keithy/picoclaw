@@ -1,5 +1,8 @@
 #!/bin/bash
 #MISE description="Build binary (./build-current/picoclaw)"
+
+cd "$MISE_PROJECT_ROOT"
+
 set -e
 
 OUTPUT_DIR="${1:-build-current}"
